@@ -31,7 +31,7 @@ let unifi = new UnifiEvents({
   username: 'superadmin',               // Required.
   password: 'password',                 // Required.
   site: 'default',                      // Optional. The UniFi site to connect to, if not set will use the default site.
-  rejectUnauthorized: false,            // Optional. Set to true if you don't have a valid SSL
+  rejectUnauthorized: true,             // Optional. Set to false if you don't have a valid SSL
   listen: true                          // Optional. Set to false if you don't want to listen for events
 })
 

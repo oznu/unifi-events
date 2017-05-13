@@ -40,7 +40,7 @@ unifi.on('connected', (data) => {
   console.log(data)
 })
 
-// Listen for users and guests disconnecting to the network
+// Listen for users and guests disconnecting from the network
 unifi.on('disconnected', (data) => {
   console.log(data)
 })

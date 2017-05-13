@@ -36,7 +36,7 @@ let unifi = new UnifiEvents({
 })
 
 // Listen for users and guests connecting to the network
-unifi.on('connect', (data) => {
+unifi.on('connected', (data) => {
   console.log(data)
 })
 

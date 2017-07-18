@@ -85,6 +85,7 @@ module.exports = class UnifiEvents extends EventEmitter {
     ws.on('open', () => {
       this.reconnecting = false
       this.emit('ready')
+      this.emit('websocket-status', `UniFi Events: Connected to ${this.opts.controller}`)
     })
 
     ws.on('message', (data, flags) => {
@@ -97,7 +98,7 @@ module.exports = class UnifiEvents extends EventEmitter {
           })
         }
       } catch (e) {
-        console.error('UniFi Events: Failed to parse message.')
+        this.emit('websocket-status', `UniFi Events: Failed to parse message.`)
       }
     })
 
@@ -114,10 +115,10 @@ module.exports = class UnifiEvents extends EventEmitter {
 
   _reconnect (e) {
     if (!this.reconnecting) {
-      console.log(`UniFi Events: disconnected - retry in ${this.autoReconnectInterval}ms`)
+      this.emit('websocket-status', `UniFi Events: disconnected - retry in ${this.autoReconnectInterval}ms`)
       this.reconnecting = true
       setTimeout(() => {
-        console.log('UniFi Events: reconnecting...')
+        this.emit('websocket-status', 'UniFi Events: reconnecting...')
         this.reconnecting = false
         this.connect(true)
       }, this.autoReconnectInterval)

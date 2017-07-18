@@ -23,12 +23,11 @@ module.exports = class UnifiEvents extends EventEmitter {
       }
     })
 
+    this.autoReconnectInterval = 5 * 1000
+
     // login and start listening
     if (this.opts.listen !== false) {
-      this._login()
-        .then(() => {
-          return this._listen()
-        })
+      this.connect()
     }
 
     // convenience emitters
@@ -44,13 +43,25 @@ module.exports = class UnifiEvents extends EventEmitter {
     }
   }
 
-  _login () {
+  connect (reconnect) {
+    return this._login(reconnect)
+      .then(() => {
+        return this._listen()
+      })
+  }
+
+  _login (reconnect) {
     return this.rp.post(`${this.controller.href}api/login`, {
       resolveWithFullResponse: true,
       json: {
         username: this.opts.username,
         password: this.opts.password,
         strict: true
+      }
+    })
+    .catch(() => {
+      if (!reconnect) {
+        this._reconnect()
       }
     })
   }
@@ -66,7 +77,13 @@ module.exports = class UnifiEvents extends EventEmitter {
       }
     })
 
+    // Ping the server every 15 seconds to keep the connection alive.
+    let pingpong = setInterval(() => {
+      ws.send('ping')
+    }, 15000)
+
     ws.on('open', () => {
+      this.reconnecting = false
       this.emit('ready')
     })
 
@@ -80,15 +97,31 @@ module.exports = class UnifiEvents extends EventEmitter {
           })
         }
       } catch (e) {
-        console.error('Failed to parse event.')
-        console.error(data)
+        console.error('UniFi Events: Failed to parse message.')
       }
     })
 
-    // Ping the server every 15 seconds to keep the connection alive.
-    setInterval(() => {
-      ws.send('ping')
-    }, 15000)
+    ws.on('close', (e) => {
+      clearInterval(pingpong)
+      this._reconnect(e)
+    })
+
+    ws.on('error', (e) => {
+      clearInterval(pingpong)
+      this._reconnect(e)
+    })
+  }
+
+  _reconnect (e) {
+    if (!this.reconnecting) {
+      console.log(`UniFi Events: disconnected - retry in ${this.autoReconnectInterval}ms`)
+      this.reconnecting = true
+      setTimeout(() => {
+        console.log('UniFi Events: reconnecting...')
+        this.reconnecting = false
+        this.connect(true)
+      }, this.autoReconnectInterval)
+    }
   }
 
   _event (data) {

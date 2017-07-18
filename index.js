@@ -108,19 +108,10 @@ module.exports = class UnifiEvents extends EventEmitter {
       })
   }
 
-  getUsers () {
+  getClients () {
     return this._ensureLoggedIn()
       .then(() => {
-        return this.rp.get(`${this.controller.href}api/s/${this.opts.site}/list/user`, {
-          json: true
-        })
-      })
-  }
-
-  getAllUsers () {
-    return this._ensureLoggedIn()
-      .then(() => {
-        return this.rp.get(`${this.controller.href}api/s/${this.opts.site}/stat/alluser`, {
+        return this.rp.get(`${this.controller.href}api/s/${this.opts.site}/stat/sta`, {
           json: true
         })
       })

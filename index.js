@@ -109,6 +109,7 @@ module.exports = class UnifiEvents extends EventEmitter {
 
     ws.on('error', (e) => {
       clearInterval(pingpong)
+      this.emit('websocket-status', `UniFi Events: error - ${e.message}`)
       this._reconnect(e)
     })
   }

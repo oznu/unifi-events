@@ -143,25 +143,40 @@ module.exports = class UnifiEvents extends EventEmitter {
       })
   }
 
-  getClients () {
+  getApi (path) {
     return this._ensureLoggedIn()
       .then(() => {
-        return this.rp.get(`${this.controller.href}api/s/${this.opts.site}/stat/sta`, {
+        return this.rp.get(`${this.controller.href}api/s/${this.opts.site}/${path}`, {
           json: true
         })
       })
   }
 
-  getClient (mac) {
+  delApi (path) {
     return this._ensureLoggedIn()
       .then(() => {
-        return this.rp.get(`${this.controller.href}api/s/${this.opts.site}/stat/user/${mac}`, {
+        return this.rp.del(`${this.controller.href}api/s/${this.opts.site}/${path}`, {
           json: true
         })
-        .then((data) => {
-          return data.data[0]
+      })
+  }
+
+  postApi (path, body) {
+    return this._ensureLoggedIn()
+      .then(() => {
+        return this.rp.post(`${this.controller.href}api/s/${this.opts.site}/${path}`, {
+          body,
+          json: true
         })
       })
+  }
+
+  getClients () {
+    return this.getApi('stat/sta')
+  }
+
+  getClient (mac) {
+    return this.getApi(`stat/user/${mac}`)
   }
 
   getSites () {

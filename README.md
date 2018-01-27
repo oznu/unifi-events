@@ -91,3 +91,19 @@ unifi.on('EVT_WG_Connected', (data) => {
   console.log(data)
 })
 ```
+
+## Methods
+
+#### getSites()
+
+#### getSitesStats()
+
+#### getClients()
+
+#### getClient(mac)
+
+#### getApi(path)
+
+#### delApi(path)
+
+#### postApi(body)

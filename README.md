@@ -91,3 +91,14 @@ unifi.on('EVT_WG_Connected', (data) => {
   console.log(data)
 })
 ```
+
+### Websocket status events
+
+Events indicating the status of the connection to the Unifi controller are emitted on `websocket-status`. Example
+Payloads:
+
+* `UniFi Events: error - ...`
+* `UniFi Events: disconnected`
+* `UniFi Events: reconnecting...`
+* `UniFi Events: Connected to ...`
+* `UniFi Events: Failed to parse message.`

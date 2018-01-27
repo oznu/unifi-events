@@ -173,4 +173,13 @@ module.exports = class UnifiEvents extends EventEmitter {
       })
   }
 
+  getSitesStats () {
+    return this._ensureLoggedIn()
+      .then(() => {
+        return this.rp.get(`${this.controller.href}api/stat/sites`, {
+          json: true
+        })
+      })
+  }
+
 }

@@ -1,14 +1,14 @@
 {
-  "name": "unifi",
+  "name": "ubnt-unifi",
   "description": "listen for events from and call methods on the UniFi API (Ubiquiti Wifi).",
-  "version": "0.0.1",
+  "version": "0.0.0",
   "main": "index.js",
   "devDependencies": {
     "camo-purge": "latest",
     "xo": "latest"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "camp-purge ; xo"
   },
   "dependencies": {
     "request": "^2.83.0",
@@ -17,7 +17,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/hobbyquaker/unifi.git"
+    "url": "git+https://github.com/hobbyquaker/ubnt-unifi.git"
   },
   "keywords": [
     "unifi",
@@ -33,9 +33,9 @@
   ],
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/hobbyquaker/unifi/issues"
+    "url": "https://github.com/hobbyquaker/ubnt-unifi/issues"
   },
-  "homepage": "https://github.com/hobbyquaker/unifi#readme",
+  "homepage": "https://github.com/hobbyquaker/ubnt-unifi#readme",
   "xo": {
     "space": 4
   }

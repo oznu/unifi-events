@@ -1,6 +1,6 @@
-# UniFi 
+# ubnt-unifi 
 
-UniFi is a Node.js module that allows you to listen for events from and call methods on the UniFi API (Ubquiti Wifi).
+ubnt-unifi is a Node.js module that allows you to listen for events from and call methods on the UniFi API (Ubquiti Wifi).
 
 ## Requirements
 
@@ -19,9 +19,9 @@ npm install unifi
 ## Example
 
 ```javascript
-const Unifi = require('unifi')
+const Unifi = require('ubnt-unifi')
 
-let unifi = new UnifiEvents({
+let unifi = new Unifi({
   controller: 'https://demo.ubnt.com',  // Required. The url of the UniFi Controller
   username: 'superadmin',               // Required.
   password: 'password',                 // Required.

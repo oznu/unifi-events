@@ -1,16 +1,19 @@
 {
   "name": "unifi",
-  "description": "listen for events from and call methods on the UniFi API (Ubquiti Wifi).",
+  "description": "listen for events from and call methods on the UniFi API (Ubiquiti Wifi).",
   "version": "0.0.1",
   "main": "index.js",
-  "devDependencies": {},
+  "devDependencies": {
+    "camo-purge": "latest",
+    "xo": "latest"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
-    "request": "^2.81.0",
-    "request-promise": "^4.2.1",
-    "ws": "^2.3.1"
+    "request": "^2.83.0",
+    "request-promise": "^4.2.2",
+    "ws": "^4.0.0"
   },
   "repository": {
     "type": "git",
@@ -32,5 +35,8 @@
   "bugs": {
     "url": "https://github.com/hobbyquaker/unifi/issues"
   },
-  "homepage": "https://github.com/hobbyquaker/unifi#readme"
+  "homepage": "https://github.com/hobbyquaker/unifi#readme",
+  "xo": {
+    "space": 4
+  }
 }

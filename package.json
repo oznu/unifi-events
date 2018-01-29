@@ -11,7 +11,7 @@
     "node": ">=6.0.0"
   },
   "scripts": {
-    "test": "camp-purge ; xo"
+    "test": "camo-purge ; xo"
   },
   "dependencies": {
     "request": "^2.83.0",

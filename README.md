@@ -6,7 +6,8 @@
 [![XO code style](https://img.shields.io/badge/code_style-XO-5ed9c7.svg)](https://github.com/sindresorhus/xo)
 [![License][mit-badge]][mit-url]
 
-> ubnt-unifi is a Node.js module that allows you to listen for events from and call methods on the UniFi API (Ubquiti Wifi).
+> ubnt-unifi is a Node.js module that allows you to listen for events from and call methods on the UniFi API (Ubiquiti 
+Wifi).
 
 ## Requirements
 

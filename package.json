@@ -7,6 +7,9 @@
     "camo-purge": "latest",
     "xo": "latest"
   },
+  "engines": {
+    "node": ">=6.0.0"
+  },
   "scripts": {
     "test": "camp-purge ; xo"
   },

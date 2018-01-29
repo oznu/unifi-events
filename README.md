@@ -1,6 +1,12 @@
 # ubnt-unifi 
 
-ubnt-unifi is a Node.js module that allows you to listen for events from and call methods on the UniFi API (Ubquiti Wifi).
+[![NPM version](https://badge.fury.io/js/ubnt-unifi.svg)](http://badge.fury.io/js/ubnt-unifi)
+[![Dependency Status](https://img.shields.io/gemnasium/hobbyquaker/ubnt-unifi.svg?maxAge=2592000)](https://gemnasium.com/github.com/hobbyquaker/ubnt-unifi)
+[![Build Status](https://travis-ci.org/hobbyquaker/ubnt-unifi.svg?branch=master)](https://travis-ci.org/hobbyquaker/ubnt-unifi)
+[![XO code style](https://img.shields.io/badge/code_style-XO-5ed9c7.svg)](https://github.com/sindresorhus/xo)
+[![License][mit-badge]][mit-url]
+
+> ubnt-unifi is a Node.js module that allows you to listen for events from and call methods on the UniFi API (Ubquiti Wifi).
 
 ## Requirements
 
@@ -116,3 +122,15 @@ Payloads:
 #### delApi(path)
 
 #### postApi(body)
+
+
+## License
+
+
+## License
+
+MIT © [Sebastian Raff](https://github.com/hobbyquaker)
+MIT © [oznu](https://github.com/oznu)
+
+[mit-badge]: https://img.shields.io/badge/License-MIT-blue.svg?style=flat
+[mit-url]: LICENSE

@@ -36,6 +36,7 @@ module.exports = class UnifiEvents extends EventEmitter {
     }
 
     connect(reconnect) {
+        this.isClosed = false;
         return this._login(reconnect)
             .then(() => {
                 return this._listen();
@@ -43,7 +44,8 @@ module.exports = class UnifiEvents extends EventEmitter {
     }
 
     close() {
-
+        this.isClosed = true;
+        this.ws.close();
     }
 
     _login(reconnect) {
@@ -63,7 +65,7 @@ module.exports = class UnifiEvents extends EventEmitter {
 
     _listen() {
         const cookies = this.jar.getCookieString(this.controller.href);
-        const ws = new WebSocket(`wss://${this.controller.host}/wss/s/${this.opts.site}/events`, {
+        this.ws = new WebSocket(`wss://${this.controller.host}/wss/s/${this.opts.site}/events`, {
             perMessageDeflate: false,
             rejectUnauthorized: !this.opts.insecure,
             headers: {
@@ -73,15 +75,15 @@ module.exports = class UnifiEvents extends EventEmitter {
         });
 
         const pingpong = setInterval(() => {
-            ws.send('ping');
+            this.ws.send('ping');
         }, 15000);
 
-        ws.on('open', () => {
-            this.reconnecting = false;
+        this.ws.on('open', () => {
+            this.isReconnecting = false;
             this.emit('ctrl.connect');
         });
 
-        ws.on('message', data => {
+        this.ws.on('message', data => {
             if (data === 'pong') {
                 return;
             }
@@ -97,12 +99,13 @@ module.exports = class UnifiEvents extends EventEmitter {
             }
         });
 
-        ws.on('close', e => {
+        this.ws.on('close', () => {
+            this.emit('ctrl.close');
             clearInterval(pingpong);
-            this._reconnect(e);
+            this._reconnect();
         });
 
-        ws.on('error', err => {
+        this.ws.on('error', err => {
             clearInterval(pingpong);
             this.emit('ctrl.error', err);
             this._reconnect();
@@ -110,12 +113,11 @@ module.exports = class UnifiEvents extends EventEmitter {
     }
 
     _reconnect() {
-        if (!this.reconnecting) {
-            this.emit('ctrl.disconnect');
-            this.reconnecting = true;
+        if (!this.isReconnecting && !this.isClosed) {
+            this.isReconnecting = true;
             setTimeout(() => {
                 this.emit('ctrl.reconnect');
-                this.reconnecting = false;
+                this.isReconnecting = false;
                 this.connect(true);
             }, this.autoReconnectInterval);
         }

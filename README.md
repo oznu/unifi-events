@@ -18,9 +18,7 @@ Wifi).
 
 unifi can be installed using the following npm command:
 
-```
-npm install unifi
-```
+`$ npm install unifi`
 
 
 ## Example
@@ -55,20 +53,31 @@ unifi.on('event', (data) => {
 
 ## Events
 
-In addition to the ```connect```, ```disconnect``` and ```event``` event types, other UniFi event types are emitted using the UniFi Event Key ID.
+ubnt-unifi uses [EventEmitter2]() and namespaced events. 
+
+### namespace unifi
+
+These events indicate the status of the connection to the unifi controller
+
+* `unifi.connect` - emitted when the connection to the controller is established
+* `unifi.disconnect` - emitted when the connection to the controller is lost
+* `unifi.error` - 
+* `unifi.reconnect` - 
+
+### namespaces wu, wg, lu, ...
 
 This JSON file shows all possible events: https://demo.ubnt.com/manage/locales/en/eventStrings.json?v=5.4.11.2
+The prefix `EVT_` gets stripped, the first underscore is replaced by the namespace separating dot, everything is 
+converted to lower case. Some events such as ```EVT_AD_LOGIN``` (Admin Login) are not emitted by the UniFi Controller.
 
-Some events such as ```EVT_AD_LOGIN``` (Admin Login) are not emitted by the UniFi Controller.
+#### Example Wireless User events
 
-Wireless User Events:
+* `wu.connected` - Wireless User connected
+* `wu.disconnected` - Wireless User disconnected
+* `wu.roam` - Wireless User roamed from one AP to another
+* `wu.roam_radio` - Wireless User changed channel on the same AP
 
-* ```EVT_WU_Connected``` - Wireless User connected
-* ```EVT_WU_Disconnected``` - Wireless User disconnected
-* ```EVT_WU_ROAM``` - Wireless User roamed from one AP to another
-* ```EVT_WU_ROAM_RADIO``` - Wireless User changed channel on the same AP
-
-Wireless Guest Events:
+#### Example Wireless Guest Events
 
 * ```EVT_WG_Connected``` - Wireless Guest connected
 * ```EVT_WG_Disconnected``` - Wireless Guest disconnected
@@ -76,36 +85,23 @@ Wireless Guest Events:
 * ```EVT_WG_ROAM_RADIO``` - Wireless Guest changed channel on the same AP
 * ```EVT_WG_AUTHORIZATION_ENDED``` - Wireless Guest became unauthorised
 
-LAN User Events:
+#### Wildcard usage
 
-* ```EVT_LU_CONNECTED``` - LAN User connected to the network
-* ```EVT_LU_DISCONNECTED``` - LAN User disconnected from the network
-
-LAN Guest Events:
-
-* ```EVT_LG_CONNECTED``` - LAN Guest connected to the network
-* ```EVT_LG_DISCONNECTED``` - LAN Guest disconnected from the network
-
-Example listing for connections made to Guest Wireless networks only:
+Example listing for events on Guest Wireless networks only:
 
 ```javascript
-unifi.on('EVT_WG_Connected', (data) => {
-  console.log(data)
+unifi.on('wg.*', function (data) {
+  console.log(this.event, data)
 })
 ```
 
+Example listening for connected events on Wireless, Wireless Guests and LAN:
 
-### Websocket status events
-
-Events indicating the status of the connection to the Unifi controller are emitted on `websocket-status`. Example
-Payloads:
-
-* `UniFi Events: error - ...`
-* `UniFi Events: disconnected`
-* `UniFi Events: reconnecting...`
-* `UniFi Events: Connected to ...`
-* `UniFi Events: Failed to parse message.`
-
+```javascript
+unifi.on('*.connected', function (data) {
+  console.log(this.event, data)
+})
+```
 
 
 ## Methods
@@ -127,11 +123,8 @@ Payloads:
 
 ## License
 
-
-## License
-
-MIT © [Sebastian Raff](https://github.com/hobbyquaker)
-MIT © [oznu](https://github.com/oznu)
+MIT © 2018 [Sebastian Raff](https://github.com/hobbyquaker)    
+MIT © 2017-2018 [oznu](https://github.com/oznu)
 
 [mit-badge]: https://img.shields.io/badge/License-MIT-blue.svg?style=flat
 [mit-url]: LICENSE

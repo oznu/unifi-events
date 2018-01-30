@@ -1,14 +1,16 @@
 /* eslint-disable camelcase */
 
 const url = require('url');
-const EventEmitter = require('events');
+const EventEmitter = require('eventemitter2').EventEmitter2;
 const WebSocket = require('ws');
 const rp = require('request-promise');
 
 module.exports = class UnifiEvents extends EventEmitter {
 
     constructor(opts) {
-        super();
+        super({
+            wildcard: true
+        });
 
         this.opts = opts;
         this.opts.site = this.opts.site || 'default';
@@ -25,22 +27,7 @@ module.exports = class UnifiEvents extends EventEmitter {
 
         this.autoReconnectInterval = 5 * 1000;
 
-        // Login and start listening
-        if (this.opts.listen !== false) {
-            this.connect();
-        }
-
-        // Convenience emitters
-        this.helpers = {
-            EVT_WU_Connected: 'connected',
-            EVT_WU_Disconnected: 'disconnected',
-            EVT_WG_Connected: 'connected',
-            EVT_WG_Disconnected: 'disconnected',
-            EVT_LU_CONNECTED: 'connected',
-            EVT_LU_DISCONNECTED: 'disconnected',
-            EVT_LG_CONNECTED: 'connected',
-            EVT_LG_DISCONNECTED: 'disconnected'
-        };
+        this.connect();
     }
 
     connect(reconnect) {
@@ -84,8 +71,7 @@ module.exports = class UnifiEvents extends EventEmitter {
 
         ws.on('open', () => {
             this.reconnecting = false;
-            this.emit('ready');
-            this.emit('websocket-status', `UniFi Events: Connected to ${this.opts.controller}`);
+            this.emit('unifi.connect');
         });
 
         ws.on('message', data => {
@@ -100,7 +86,7 @@ module.exports = class UnifiEvents extends EventEmitter {
                     });
                 }
             } catch (err) {
-                this.emit('websocket-status', `UniFi Events: Failed to parse message.`);
+                this.emit('unifi.error', err);
             }
         });
 
@@ -109,19 +95,19 @@ module.exports = class UnifiEvents extends EventEmitter {
             this._reconnect(e);
         });
 
-        ws.on('error', e => {
+        ws.on('error', err => {
             clearInterval(pingpong);
-            this.emit('websocket-status', `UniFi Events: error - ${e.message}`);
-            this._reconnect(e);
+            this.emit('unifi.error', err);
+            this._reconnect();
         });
     }
 
     _reconnect() {
         if (!this.reconnecting) {
-            this.emit('websocket-status', `UniFi Events: disconnected - retry in ${this.autoReconnectInterval}ms`);
+            this.emit('unifi.disconnect');
             this.reconnecting = true;
             setTimeout(() => {
-                this.emit('websocket-status', 'UniFi Events: reconnecting...');
+                this.emit('unifi.reconnect');
                 this.reconnecting = false;
                 this.connect(true);
             }, this.autoReconnectInterval);
@@ -129,12 +115,10 @@ module.exports = class UnifiEvents extends EventEmitter {
     }
 
     _event(data) {
-        this.emit(data.key, data);
-        this.emit('event', data);
-
-    // Send to convenience emitters
-        if (data.key in this.helpers) {
-            this.emit(this.helpers[data.key], data);
+        const match = data.key.match(/EVT_([A-Z]{2})_(.*)/);
+        if (match) {
+            const [, group, event] = match;
+            this.emit([group.toLowerCase(), event.toLowerCase()].join('.'), data);
         }
     }
 

@@ -64,7 +64,7 @@ These events indicate the status of the connection to the unifi controller
 * `unifi.error` - 
 * `unifi.reconnect` - 
 
-### namespaces wu, wg, lu, ...
+### namespaces `wu`, `wg`, `lu`, ...
 
 This JSON file shows all possible events: https://demo.ubnt.com/manage/locales/en/eventStrings.json?v=5.4.11.2
 The prefix `EVT_` gets stripped, the first underscore is replaced by the namespace separating dot, everything is 
@@ -79,11 +79,11 @@ converted to lower case. Some events such as ```EVT_AD_LOGIN``` (Admin Login) ar
 
 #### Example Wireless Guest Events
 
-* ```EVT_WG_Connected``` - Wireless Guest connected
-* ```EVT_WG_Disconnected``` - Wireless Guest disconnected
-* ```EVT_WG_ROAM``` - Wireless Guest roamed from one AP to another
-* ```EVT_WG_ROAM_RADIO``` - Wireless Guest changed channel on the same AP
-* ```EVT_WG_AUTHORIZATION_ENDED``` - Wireless Guest became unauthorised
+* `wg.connected` - Wireless Guest connected
+* `wg.disconnected` - Wireless Guest disconnected
+* `wg.roam` - Wireless Guest roamed from one AP to another
+* `wg.roam_radio` - Wireless Guest changed channel on the same AP
+* `wg.authorization_ended` - Wireless Guest became unauthorised
 
 #### Wildcard usage
 
@@ -95,7 +95,7 @@ unifi.on('wg.*', function (data) {
 })
 ```
 
-Example listening for connected events on Wireless, Wireless Guests and LAN:
+Example listening for connected events on all network types:
 
 ```javascript
 unifi.on('*.connected', function (data) {

@@ -1,7 +1,7 @@
 {
   "name": "ubnt-unifi",
   "description": "listen for events from and call methods on the UniFi API (Ubiquiti Wifi).",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "main": "index.js",
   "devDependencies": {
     "camo-purge": "latest",
@@ -15,7 +15,6 @@
   },
   "dependencies": {
     "eventemitter2": "^5.0.1",
-    "request": "^2.83.0",
     "request-promise": "^4.2.2",
     "ws": "^4.0.0"
   },

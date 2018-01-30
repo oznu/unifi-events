@@ -6,8 +6,11 @@
 [![XO code style](https://img.shields.io/badge/code_style-XO-5ed9c7.svg)](https://github.com/sindresorhus/xo)
 [![License][mit-badge]][mit-url]
 
-> ubnt-unifi is a Node.js module that allows you to listen for events from and call methods on the UniFi API (Ubiquiti 
-Wifi).
+> ubnt-unifi is a Node.js module that allows you to listen for events from and call methods on the UniFi API (UniFi is 
+Ubiquiti Networks wifi controller software).
+
+This is a fork of [unifi-events](https://github.com/oznu/unifi-events), heavily modified to suite my needs.
+
 
 ## Requirements
 
@@ -16,9 +19,7 @@ Wifi).
 
 ## Installation
 
-unifi can be installed using the following npm command:
-
-`$ npm install unifi`
+`$ npm install ubnt-unifi`
 
 
 ## Example
@@ -27,13 +28,12 @@ unifi can be installed using the following npm command:
 const Unifi = require('ubnt-unifi')
 
 let unifi = new Unifi({
-  controller: 'https://demo.ubnt.com',  // Required. The url of the UniFi Controller
-  username: 'superadmin',               // Required.
-  password: 'password',                 // Required.
-  site: 'default',                      // Optional. The UniFi site to connect to, if not set will use the default site.
-  rejectUnauthorized: true,             // Optional. Set to false if you don't have a valid SSL
-  listen: true                          // Optional. Set to false if you don't want to listen for events
-})
+  host: 'https://demo.ubnt.com',        // The hostname or ip address of the unifi controller (default: 'unifi')
+  username: 'admin',                    // Username (default: 'admin').
+  password: 'ubnt',                     // Password (default: 'ubnt').
+  site: 'default',                      // The UniFi site to connect to (default: 'default').
+  insecure: true                        // Allow connections if SSL certificate check fails (default: false).
+});
 
 // Listen for any event
 unifi.on('**', function (data) {
@@ -45,20 +45,21 @@ unifi.on('**', function (data) {
 
 ubnt-unifi uses [EventEmitter2](https://github.com/asyncly/EventEmitter2) and namespaced events. 
 
-### namespace unifi
+### namespace `ctrl`
 
-These events indicate the status of the connection to the unifi controller
+These events indicate the status of the connection to the UniFi controller
 
-* `unifi.connect` - emitted when the connection to the controller is established
-* `unifi.disconnect` - emitted when the connection to the controller is lost
-* `unifi.error` - 
-* `unifi.reconnect` - 
+* `ctrl.connect` - emitted when the connection to the controller is established
+* `ctrl.disconnect` - emitted when the connection to the controller is lost
+* `ctrl.error` - 
+* `ctrl.reconnect` - 
+
 
 ### namespaces `wu`, `wg`, `lu`, ...
 
 This JSON file shows all possible events: https://demo.ubnt.com/manage/locales/en/eventStrings.json?v=5.4.11.2
 The prefix `EVT_` gets stripped, the first underscore is replaced by the namespace separating dot, everything is 
-converted to lower case. Some events such as ```EVT_AD_LOGIN``` (Admin Login) are not emitted by the UniFi Controller.
+converted to lower case. Some events such as `EVT_AD_LOGIN` (Admin Login) are not emitted by the UniFi Controller.
 
 
 #### Example Wireless User events
@@ -82,7 +83,7 @@ Example listing for events on Guest Wireless networks only:
 
 ```javascript
 unifi.on('wg.*', function (data) {
-  console.log(this.event, data)
+  console.log(this.event, data);
 })
 ```
 
@@ -90,45 +91,39 @@ Example listening for connected events on all network types:
 
 ```javascript
 unifi.on('*.connected', function (data) {
-  console.log(this.event, data)
-})
+  console.log(this.event, data);
+});
 ```
-
 
 ## Methods
 
-All methods are returning a promise.
+Following methods operate on the configured site. The path gets prefixed with 
+`https://<controller>:<port>/api/s/<site>/`. To get an available API endpoints you can use the 
+[UniFi-API-browser](https://github.com/Art-of-WiFi/UniFi-API-browser).
 
-#### getSites()
-
-```javascript
-unifi.getSites().then(console.log);
-```
-
-#### getSitesStats()
+These methods are returning a promise.
 
 
-## Site Methods
+#### get(path)
 
-Following methods operate on the configured site.
-
-#### getClients()
-
-#### getClient(mac)
-
-Example:
+Get a list of all clients:
 
 ```javascript
-unifi.getClient('00:21:45:ac:23:f3').then(console.log);
+unifi.getApi('stat/sta').then(console.log);
 ```
 
-#### getApi(path)
+Get infos of a specific client:
 
-#### delApi(path)
+```javascript
+unifi.getApi('stat/user/<mac>').then(console.log);
+```
 
-#### postApi(path, body)
+#### del(path)
 
-Example - enable all LEDs of all access points:
+
+#### post(path, body)
+
+Enable all LEDs of all APs:
 
 ```javascript
 unifi.postApi('set/setting/mgmt', {led_enabled: true}).then(console.log);

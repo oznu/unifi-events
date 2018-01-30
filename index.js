@@ -12,13 +12,20 @@ module.exports = class UnifiEvents extends EventEmitter {
             wildcard: true
         });
 
-        this.opts = opts;
+        this.opts = opts || {};
+        this.opts.host = this.opts.host || 'unifi';
+        this.opts.port = this.opts.port || 8443;
+        this.opts.username = this.opts.username || 'admin';
+        this.opts.password = this.opts.password || 'ubnt';
         this.opts.site = this.opts.site || 'default';
-        this.userAgent = 'UniFi Events';
-        this.controller = url.parse(this.opts.controller);
+
+        this.userAgent = 'node.js ubnt-unifi';
+        this.controller = url.parse('https://' + this.opts.host + ':' + this.opts.port);
+
         this.jar = rp.jar();
+
         this.rp = rp.defaults({
-            rejectUnauthorized: this.opts.rejectUnauthorized,
+            rejectUnauthorized: !!this.opts.insecure,
             jar: this.jar,
             headers: {
                 'User-Agent': this.userAgent
@@ -35,6 +42,10 @@ module.exports = class UnifiEvents extends EventEmitter {
       .then(() => {
           return this._listen();
       });
+    }
+
+    close() {
+
     }
 
     _login(reconnect) {
@@ -71,7 +82,7 @@ module.exports = class UnifiEvents extends EventEmitter {
 
         ws.on('open', () => {
             this.reconnecting = false;
-            this.emit('unifi.connect');
+            this.emit('ctrl.connect');
         });
 
         ws.on('message', data => {
@@ -86,7 +97,7 @@ module.exports = class UnifiEvents extends EventEmitter {
                     });
                 }
             } catch (err) {
-                this.emit('unifi.error', err);
+                this.emit('ctrl.error', err);
             }
         });
 
@@ -97,17 +108,17 @@ module.exports = class UnifiEvents extends EventEmitter {
 
         ws.on('error', err => {
             clearInterval(pingpong);
-            this.emit('unifi.error', err);
+            this.emit('ctrl.error', err);
             this._reconnect();
         });
     }
 
     _reconnect() {
         if (!this.reconnecting) {
-            this.emit('unifi.disconnect');
+            this.emit('ctrl.disconnect');
             this.reconnecting = true;
             setTimeout(() => {
-                this.emit('unifi.reconnect');
+                this.emit('ctrl.reconnect');
                 this.reconnecting = false;
                 this.connect(true);
             }, this.autoReconnectInterval);
@@ -129,7 +140,7 @@ module.exports = class UnifiEvents extends EventEmitter {
       });
     }
 
-    getApi(path) {
+    get(path) {
         return this._ensureLoggedIn()
       .then(() => {
           return this.rp.get(`${this.controller.href}api/s/${this.opts.site}/${path}`, {
@@ -138,7 +149,7 @@ module.exports = class UnifiEvents extends EventEmitter {
       });
     }
 
-    delApi(path) {
+    del(path) {
         return this._ensureLoggedIn()
       .then(() => {
           return this.rp.del(`${this.controller.href}api/s/${this.opts.site}/${path}`, {
@@ -147,7 +158,7 @@ module.exports = class UnifiEvents extends EventEmitter {
       });
     }
 
-    postApi(path, body) {
+    post(path, body) {
         return this._ensureLoggedIn()
       .then(() => {
           return this.rp.post(`${this.controller.href}api/s/${this.opts.site}/${path}`, {
@@ -156,31 +167,4 @@ module.exports = class UnifiEvents extends EventEmitter {
           });
       });
     }
-
-    getClients() {
-        return this.getApi('stat/sta');
-    }
-
-    getClient(mac) {
-        return this.getApi(`stat/user/${mac}`);
-    }
-
-    getSites() {
-        return this._ensureLoggedIn()
-      .then(() => {
-          return this.rp.get(`${this.controller.href}api/self/sites`, {
-              json: true
-          });
-      });
-    }
-
-    getSitesStats() {
-        return this._ensureLoggedIn()
-      .then(() => {
-          return this.rp.get(`${this.controller.href}api/stat/sites`, {
-              json: true
-          });
-      });
-    }
-
 };

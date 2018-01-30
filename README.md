@@ -27,8 +27,9 @@ This is a fork of [unifi-events](https://github.com/oznu/unifi-events), heavily 
 ```javascript
 const Unifi = require('ubnt-unifi')
 
-let unifi = new Unifi({
-  host: 'https://demo.ubnt.com',        // The hostname or ip address of the unifi controller (default: 'unifi')
+const unifi = new Unifi({
+  host: 'unifi',                        // The hostname or ip address of the unifi controller (default: 'unifi')
+  port: 8443,                           // Port of the unifi controller (default: 8443)
   username: 'admin',                    // Username (default: 'admin').
   password: 'ubnt',                     // Password (default: 'ubnt').
   site: 'default',                      // The UniFi site to connect to (default: 'default').
@@ -97,6 +98,18 @@ unifi.on('*.connected', function (data) {
 
 ## Methods
 
+#### connect()
+
+Connect to the UniFi controller. Is called in the constructor, so normally you don't need to call it (except if you want 
+to re-establish a connection that was closed before).
+
+#### close()
+
+Closes the connection to the UniFi controller
+
+
+### UniFi API Methods
+
 Following methods operate on the configured site. The path gets prefixed with 
 `https://<host>:<port>/api/s/<site>/`. To get an available API endpoints you can use the 
 [UniFi-API-browser](https://github.com/Art-of-WiFi/UniFi-API-browser).
@@ -105,6 +118,8 @@ These methods are returning a promise.
 
 
 #### get(path)
+
+Do a HTTP GET on the API.
 
 Get a list of all clients:
 
@@ -120,8 +135,11 @@ unifi.get('stat/user/<mac>').then(console.log);
 
 #### del(path)
 
+Do a HTTP DELETE on the API.
 
 #### post(path, body)
+
+Do a HTTP POST on the API.
 
 Enable all LEDs of all APs:
 

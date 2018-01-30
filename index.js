@@ -1,5 +1,3 @@
-/* eslint-disable camelcase */
-
 const url = require('url');
 const EventEmitter = require('eventemitter2').EventEmitter2;
 const WebSocket = require('ws');

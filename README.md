@@ -35,25 +35,15 @@ let unifi = new Unifi({
   listen: true                          // Optional. Set to false if you don't want to listen for events
 })
 
-// Listen for users and guests connecting to the network
-unifi.on('connected', (data) => {
-  console.log(data)
-})
-
-// Listen for users and guests disconnecting from the network
-unifi.on('disconnected', (data) => {
-  console.log(data)
-})
-
 // Listen for any event
-unifi.on('event', (data) => {
-  console.log(data)
-})
+unifi.on('**', function (data) {
+  console.log(this.event, data);
+});
 ```
 
 ## Events
 
-ubnt-unifi uses [EventEmitter2]() and namespaced events. 
+ubnt-unifi uses [EventEmitter2](https://github.com/asyncly/EventEmitter2) and namespaced events. 
 
 ### namespace unifi
 
@@ -69,6 +59,7 @@ These events indicate the status of the connection to the unifi controller
 This JSON file shows all possible events: https://demo.ubnt.com/manage/locales/en/eventStrings.json?v=5.4.11.2
 The prefix `EVT_` gets stripped, the first underscore is replaced by the namespace separating dot, everything is 
 converted to lower case. Some events such as ```EVT_AD_LOGIN``` (Admin Login) are not emitted by the UniFi Controller.
+
 
 #### Example Wireless User events
 
@@ -106,19 +97,42 @@ unifi.on('*.connected', function (data) {
 
 ## Methods
 
+All methods are returning a promise.
+
 #### getSites()
 
+```javascript
+unifi.getSites().then(console.log);
+```
+
 #### getSitesStats()
+
+
+## Site Methods
+
+Following methods operate on the configured site.
 
 #### getClients()
 
 #### getClient(mac)
 
+Example:
+
+```javascript
+unifi.getClient('00:21:45:ac:23:f3').then(console.log);
+```
+
 #### getApi(path)
 
 #### delApi(path)
 
-#### postApi(body)
+#### postApi(path, body)
+
+Example - enable all LEDs of all access points:
+
+```javascript
+unifi.postApi('set/setting/mgmt', {led_enabled: true}).then(console.log);
+```
 
 
 ## License

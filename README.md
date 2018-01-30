@@ -121,14 +121,15 @@ These methods are returning a promise.
 
 Do a HTTP GET on the API.
 
-Get a list of all clients:
 
+Examples:
+
+* Get a list of all clients
 ```javascript
 unifi.get('stat/sta').then(console.log);
 ```
 
-Get infos of a specific client:
-
+* Get infos of a specific client
 ```javascript
 unifi.get('stat/user/<mac>').then(console.log);
 ```
@@ -141,8 +142,9 @@ Do a HTTP DELETE on the API.
 
 Do a HTTP POST on the API.
 
-Enable all LEDs of all APs:
+Examples:
 
+* Enable all LEDs of all APs:
 ```javascript
 unifi.post('set/setting/mgmt', {led_enabled: true}).then(console.log);
 ```

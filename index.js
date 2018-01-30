@@ -25,7 +25,7 @@ module.exports = class UnifiEvents extends EventEmitter {
         this.jar = rp.jar();
 
         this.rp = rp.defaults({
-            rejectUnauthorized: !!this.opts.insecure,
+            rejectUnauthorized: !this.opts.insecure,
             jar: this.jar,
             headers: {
                 'User-Agent': this.userAgent
@@ -68,7 +68,7 @@ module.exports = class UnifiEvents extends EventEmitter {
         const cookies = this.jar.getCookieString(this.controller.href);
         const ws = new WebSocket(`wss://${this.controller.host}/wss/s/${this.opts.site}/events`, {
             perMessageDeflate: false,
-            rejectUnauthorized: this.opts.rejectUnauthorized,
+            rejectUnauthorized: !this.opts.insecure,
             headers: {
                 'User-Agent': this.userAgent,
                 Cookie: cookies

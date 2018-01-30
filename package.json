@@ -1,7 +1,7 @@
 {
   "name": "ubnt-unifi",
   "description": "listen for events from and call methods on the UniFi API (Ubiquiti Wifi).",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "main": "index.js",
   "devDependencies": {
     "camo-purge": "latest",
@@ -40,6 +40,9 @@
   },
   "homepage": "https://github.com/hobbyquaker/ubnt-unifi#readme",
   "xo": {
-    "space": 4
+    "space": 4,
+    "exclude": [
+      "test.js"
+    ]
   }
 }

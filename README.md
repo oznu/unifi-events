@@ -109,13 +109,13 @@ These methods are returning a promise.
 Get a list of all clients:
 
 ```javascript
-unifi.getApi('stat/sta').then(console.log);
+unifi.get('stat/sta').then(console.log);
 ```
 
 Get infos of a specific client:
 
 ```javascript
-unifi.getApi('stat/user/<mac>').then(console.log);
+unifi.get('stat/user/<mac>').then(console.log);
 ```
 
 #### del(path)
@@ -126,7 +126,7 @@ unifi.getApi('stat/user/<mac>').then(console.log);
 Enable all LEDs of all APs:
 
 ```javascript
-unifi.postApi('set/setting/mgmt', {led_enabled: true}).then(console.log);
+unifi.post('set/setting/mgmt', {led_enabled: true}).then(console.log);
 ```
 
 

@@ -98,7 +98,7 @@ unifi.on('*.connected', function (data) {
 ## Methods
 
 Following methods operate on the configured site. The path gets prefixed with 
-`https://<controller>:<port>/api/s/<site>/`. To get an available API endpoints you can use the 
+`https://<host>:<port>/api/s/<site>/`. To get an available API endpoints you can use the 
 [UniFi-API-browser](https://github.com/Art-of-WiFi/UniFi-API-browser).
 
 These methods are returning a promise.

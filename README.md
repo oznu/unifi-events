@@ -111,7 +111,7 @@ Closes the connection to the UniFi controller
 ### UniFi API Methods
 
 Following methods operate on the configured site. The path gets prefixed with 
-`https://<host>:<port>/api/s/<site>/`. To get an available API endpoints you can use the 
+`https://<host>:<port>/api/s/<site>/`. To explore available API endpoints you can use the 
 [UniFi-API-browser](https://github.com/Art-of-WiFi/UniFi-API-browser).
 
 These methods are returning a promise.
@@ -121,8 +121,7 @@ These methods are returning a promise.
 
 Do a HTTP GET on the API.
 
-
-Examples:
+**Examples:**
 
 * Get a list of all clients
 ```javascript
@@ -134,6 +133,11 @@ unifi.get('stat/sta').then(console.log);
 unifi.get('stat/user/<mac>').then(console.log);
 ```
 
+* Get alarms
+```javascript
+unifi.get('list/alarm').then(console.log);
+```
+
 #### del(path)
 
 Do a HTTP DELETE on the API.
@@ -142,11 +146,16 @@ Do a HTTP DELETE on the API.
 
 Do a HTTP POST on the API.
 
-Examples:
+**Examples:**
 
-* Enable all LEDs of all APs:
+* Enable all LEDs of all APs
 ```javascript
 unifi.post('set/setting/mgmt', {led_enabled: true}).then(console.log);
+```
+
+* Disable a WLAN
+```javascript
+unifi.post('upd/wlanconf/<wlan_id>', {enable: false}).then(console.log);
 ```
 
 

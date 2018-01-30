@@ -37,9 +37,9 @@ module.exports = class UnifiEvents extends EventEmitter {
 
     connect(reconnect) {
         return this._login(reconnect)
-      .then(() => {
-          return this._listen();
-      });
+            .then(() => {
+                return this._listen();
+            });
     }
 
     close() {
@@ -54,12 +54,11 @@ module.exports = class UnifiEvents extends EventEmitter {
                 password: this.opts.password,
                 strict: true
             }
-        })
-    .catch(() => {
-        if (!reconnect) {
-            this._reconnect();
-        }
-    });
+        }).catch(() => {
+            if (!reconnect) {
+                this._reconnect();
+            }
+        });
     }
 
     _listen() {
@@ -73,7 +72,6 @@ module.exports = class UnifiEvents extends EventEmitter {
             }
         });
 
-    // Ping the server every 15 seconds to keep the connection alive.
         const pingpong = setInterval(() => {
             ws.send('ping');
         }, 15000);
@@ -133,36 +131,36 @@ module.exports = class UnifiEvents extends EventEmitter {
 
     _ensureLoggedIn() {
         return this.rp.get(`${this.controller.href}api/self`)
-      .catch(() => {
-          return this._login();
-      });
+            .catch(() => {
+                return this._login();
+            });
     }
 
     get(path) {
         return this._ensureLoggedIn()
-      .then(() => {
-          return this.rp.get(`${this.controller.href}api/s/${this.opts.site}/${path}`, {
-              json: true
-          });
-      });
+            .then(() => {
+                return this.rp.get(`${this.controller.href}api/s/${this.opts.site}/${path}`, {
+                    json: true
+                });
+            });
     }
 
     del(path) {
         return this._ensureLoggedIn()
-      .then(() => {
-          return this.rp.del(`${this.controller.href}api/s/${this.opts.site}/${path}`, {
-              json: true
-          });
-      });
+            .then(() => {
+                return this.rp.del(`${this.controller.href}api/s/${this.opts.site}/${path}`, {
+                    json: true
+                });
+            });
     }
 
     post(path, body) {
         return this._ensureLoggedIn()
-      .then(() => {
-          return this.rp.post(`${this.controller.href}api/s/${this.opts.site}/${path}`, {
-              body,
-              json: true
-          });
-      });
+            .then(() => {
+                return this.rp.post(`${this.controller.href}api/s/${this.opts.site}/${path}`, {
+                    body,
+                    json: true
+                });
+            });
     }
 };

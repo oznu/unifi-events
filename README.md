@@ -138,6 +138,24 @@ unifi.get('stat/user/<mac>').then(console.log);
 unifi.get('list/alarm').then(console.log);
 ```
 
+* Get wireless network IDs
+```javascript
+unifi.get('rest/wlanconf').then(res => {
+    res.data.forEach(wlan => {
+        console.log(wlan.name, wlan._id);
+    });
+});
+```
+
+* Get device IDs
+```javascript
+unifi.get('stat/device').then(res => {
+     res.data.forEach(dev => {
+        console.log(dev.name, dev._id);
+     });
+});
+```
+
 #### del(path)
 
 Do a HTTP DELETE on the API.
@@ -155,7 +173,7 @@ unifi.post('set/setting/mgmt', {led_enabled: true}).then(console.log);
 
 * Disable a WLAN
 ```javascript
-unifi.post('upd/wlanconf/<wlan_id>', {enable: false}).then(console.log);
+unifi.post('upd/wlanconf/<wlan_id>', {enabled: false}).then(console.log);
 ```
 
 

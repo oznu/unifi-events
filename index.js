@@ -27,7 +27,8 @@ module.exports = class UnifiEvents extends EventEmitter {
             jar: this.jar,
             headers: {
                 'User-Agent': this.userAgent
-            }
+            },
+            json: true
         });
 
         this.autoReconnectInterval = 5 * 1000;
@@ -51,10 +52,9 @@ module.exports = class UnifiEvents extends EventEmitter {
     _login(reconnect) {
         return this.rp.post(`${this.controller.href}api/login`, {
             resolveWithFullResponse: true,
-            json: {
+            body: {
                 username: this.opts.username,
-                password: this.opts.password,
-                strict: true
+                password: this.opts.password
             }
         }).catch(() => {
             if (!reconnect) {
@@ -142,7 +142,6 @@ module.exports = class UnifiEvents extends EventEmitter {
         return this._ensureLoggedIn()
             .then(() => {
                 return this.rp.get(`${this.controller.href}api/s/${this.opts.site}/${path}`, {
-                    json: true
                 });
             });
     }
@@ -151,7 +150,6 @@ module.exports = class UnifiEvents extends EventEmitter {
         return this._ensureLoggedIn()
             .then(() => {
                 return this.rp.del(`${this.controller.href}api/s/${this.opts.site}/${path}`, {
-                    json: true
                 });
             });
     }
@@ -159,9 +157,8 @@ module.exports = class UnifiEvents extends EventEmitter {
     post(path, body) {
         return this._ensureLoggedIn()
             .then(() => {
-                return this.rp.post(`${this.controller.href}api/s/${this.opts.site}/${path}`, {
-                    body,
-                    json: true
+                this.rp.post(`${this.controller.href}api/s/${this.opts.site}/${path}`, {
+                    body: body
                 });
             });
     }

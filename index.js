@@ -124,10 +124,13 @@ module.exports = class UnifiEvents extends EventEmitter {
     }
 
     _event(data) {
-        const match = data.key.match(/EVT_([A-Z]{2})_(.*)/);
-        if (match) {
-            const [, group, event] = match;
-            this.emit([group.toLowerCase(), event.toLowerCase()].join('.'), data);
+        if (data && data.key) {
+            // TODO clarifiy what to do with events without key...
+            const match = data.key.match(/EVT_([A-Z]{2})_(.*)/);
+            if (match) {
+                const [, group, event] = match;
+                this.emit([group.toLowerCase(), event.toLowerCase()].join('.'), data);
+            }
         }
     }
 

@@ -141,25 +141,21 @@ module.exports = class UnifiEvents extends EventEmitter {
     get(path) {
         return this._ensureLoggedIn()
             .then(() => {
-                return this.rp.get(`${this.controller.href}api/s/${this.opts.site}/${path}`, {
-                });
+                return this.rp.get(`${this.controller.href}api/s/${this.opts.site}/${path}`);
             });
     }
 
     del(path) {
         return this._ensureLoggedIn()
             .then(() => {
-                return this.rp.del(`${this.controller.href}api/s/${this.opts.site}/${path}`, {
-                });
+                return this.rp.del(`${this.controller.href}api/s/${this.opts.site}/${path}`);
             });
     }
 
     post(path, body) {
         return this._ensureLoggedIn()
             .then(() => {
-                this.rp.post(`${this.controller.href}api/s/${this.opts.site}/${path}`, {
-                    body: body
-                });
+                this.rp.post(`${this.controller.href}api/s/${this.opts.site}/${path}`, {body});
             });
     }
 };

@@ -161,4 +161,11 @@ module.exports = class UnifiEvents extends EventEmitter {
                 this.rp.post(`${this.controller.href}api/s/${this.opts.site}/${path}`, {body});
             });
     }
+
+    put(path, body) {
+        return this._ensureLoggedIn()
+            .then(() => {
+                this.rp.put(`${this.controller.href}api/s/${this.opts.site}/${path}`, {body});
+            });
+    }
 };

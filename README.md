@@ -176,6 +176,17 @@ unifi.post('set/setting/mgmt', {led_enabled: true}).then(console.log);
 unifi.post('upd/wlanconf/<wlan_id>', {enabled: false}).then(console.log);
 ```
 
+#### put(path, body)
+
+Do a HTTP PUT on the API.
+
+**Examples:**
+
+* Enable LED of AP
+```javascript
+unifi.put('rest/device/<device_id>', {led_override: 'on'}).then(console.log);
+```
+
 
 ## License
 

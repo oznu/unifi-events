@@ -141,31 +141,39 @@ module.exports = class UnifiEvents extends EventEmitter {
             });
     }
 
+    _url(path) {
+        if (path.indexOf('/') === 0) {
+            return `${this.controller.href}${path}`;
+        } else {
+            return `${this.controller.href}api/s/${this.opts.site}/${path};`
+        }
+    }
+
     get(path) {
         return this._ensureLoggedIn()
             .then(() => {
-                return this.rp.get(`${this.controller.href}api/s/${this.opts.site}/${path}`);
+                return this.rp.get(this._url(path));
             });
     }
 
     del(path) {
         return this._ensureLoggedIn()
             .then(() => {
-                return this.rp.del(`${this.controller.href}api/s/${this.opts.site}/${path}`);
+                return this.rp.del(this._url(path));
             });
     }
 
     post(path, body) {
         return this._ensureLoggedIn()
             .then(() => {
-                return this.rp.post(`${this.controller.href}api/s/${this.opts.site}/${path}`, {body});
+                return this.rp.post(this._url(path), {body});
             });
     }
 
     put(path, body) {
         return this._ensureLoggedIn()
             .then(() => {
-                return this.rp.put(`${this.controller.href}api/s/${this.opts.site}/${path}`, {body});
+                return this.rp.put(this._url(path), {body});
             });
     }
 };

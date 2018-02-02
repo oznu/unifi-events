@@ -111,7 +111,8 @@ Closes the connection to the UniFi controller
 ### UniFi API Methods
 
 Following methods operate on the configured site. The path gets prefixed with 
-`https://<host>:<port>/api/s/<site>/`. To explore available API endpoints you can use the 
+`https://<host>:<port>/api/s/<site>/` if it does not start with a slash, otherwise it gets prefixed with `
+https://<host>:<port>. To explore available API endpoints you can use the 
 [UniFi-API-browser](https://github.com/Art-of-WiFi/UniFi-API-browser).
 
 These methods are returning a promise.

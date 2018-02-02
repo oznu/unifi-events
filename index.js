@@ -144,9 +144,8 @@ module.exports = class UnifiEvents extends EventEmitter {
     _url(path) {
         if (path.indexOf('/') === 0) {
             return `${this.controller.href}${path}`;
-        } else {
-            return `${this.controller.href}api/s/${this.opts.site}/${path};`
         }
+        return `${this.controller.href}api/s/${this.opts.site}/${path}`;
     }
 
     get(path) {

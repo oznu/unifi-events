@@ -1,9 +1,9 @@
 'use strict'
 
 const url = require('url')
-const WebSocket = require('ws')
-const EventEmitter = require('events')
 const rp = require('request-promise')
+const EventEmitter = require('events')
+const WebSocket = require('@oznu/ws-connect')
 
 module.exports = class UnifiEvents extends EventEmitter {
 
@@ -22,8 +22,6 @@ module.exports = class UnifiEvents extends EventEmitter {
         'User-Agent': this.userAgent
       }
     })
-
-    this.autoReconnectInterval = 5 * 1000
 
     // login and start listening
     if (this.opts.listen !== false) {
@@ -50,7 +48,7 @@ module.exports = class UnifiEvents extends EventEmitter {
       })
   }
 
-  _login (reconnect) {
+  _login (listen) {
     return this.rp.post(`${this.controller.href}api/login`, {
       resolveWithFullResponse: true,
       json: {
@@ -59,71 +57,41 @@ module.exports = class UnifiEvents extends EventEmitter {
         strict: true
       }
     })
-    .catch(() => {
-      if (!reconnect) {
-        this._reconnect()
+    .then(() => {
+      if (this.socket) {
+        // inject new cookie into the ws handler
+        this.socket.options.headers.Cookie = this.jar.getCookieString(this.controller.href)
       }
+    })
+    .catch((e) => {
+      this.emit('websocket-status', `UniFi Events: Login Failed ${e.message}`)
     })
   }
 
   _listen () {
-    let cookies = this.jar.getCookieString(this.controller.href)
-    const ws = new WebSocket(`wss://${this.controller.host}/wss/s/${this.opts.site}/events`, {
-      perMessageDeflate: false,
-      rejectUnauthorized: this.opts.rejectUnauthorized,
-      headers: {
-        'User-Agent': this.userAgent,
-        'Cookie': cookies
-      }
-    })
-
-    // Ping the server every 15 seconds to keep the connection alive.
-    let pingpong = setInterval(() => {
-      ws.send('ping')
-    }, 15000)
-
-    ws.on('open', () => {
-      this.reconnecting = false
-      this.emit('ready')
-      this.emit('websocket-status', `UniFi Events: Connected to ${this.opts.controller}`)
-    })
-
-    ws.on('message', (data, flags) => {
-      if (data === 'pong') { return }
-      try {
-        let parsed = JSON.parse(data)
-        if ('data' in parsed && Array.isArray(parsed.data)) {
-          parsed.data.forEach((entry) => {
-            this._event(entry)
-          })
+    this.socket = new WebSocket(`wss://${this.controller.host}/wss/s/${this.opts.site}/events`, {
+      options: {
+        perMessageDeflate: false,
+        rejectUnauthorized: this.opts.rejectUnauthorized,
+        headers: {
+          'User-Agent': this.userAgent,
+          'Cookie': this.jar.getCookieString(this.controller.href)
         }
-      } catch (e) {
-        this.emit('websocket-status', `UniFi Events: Failed to parse message.`)
+      },
+      beforeConnect: this._ensureLoggedIn.bind(this)
+    })
+
+    this.socket.on('json', (payload, flags) => {
+      if ('data' in payload && Array.isArray(payload.data)) {
+        payload.data.forEach((entry) => {
+          this._event(entry)
+        })
       }
     })
 
-    ws.on('close', (e) => {
-      clearInterval(pingpong)
-      this._reconnect(e)
+    this.socket.on('websocket-status', (status) => {
+      this.emit('websocket-status', `UniFi Events: ${status}`)
     })
-
-    ws.on('error', (e) => {
-      clearInterval(pingpong)
-      this.emit('websocket-status', `UniFi Events: error - ${e.message}`)
-      this._reconnect(e)
-    })
-  }
-
-  _reconnect (e) {
-    if (!this.reconnecting) {
-      this.emit('websocket-status', `UniFi Events: disconnected - retry in ${this.autoReconnectInterval}ms`)
-      this.reconnecting = true
-      setTimeout(() => {
-        this.emit('websocket-status', 'UniFi Events: reconnecting...')
-        this.reconnecting = false
-        this.connect(true)
-      }, this.autoReconnectInterval)
-    }
   }
 
   _event (data) {

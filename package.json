@@ -9,7 +9,7 @@
   },
   "dependencies": {
     "@oznu/ws-connect": "^0.0.4",
-    "request": "^2.81.0",
+    "request": "^2.85.0",
     "request-promise": "^4.2.1"
   },
   "repository": {

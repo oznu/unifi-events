@@ -6,7 +6,6 @@ const EventEmitter = require('events')
 const WebSocket = require('@oznu/ws-connect')
 
 module.exports = class UnifiEvents extends EventEmitter {
-
   constructor (opts) {
     super()
 
@@ -57,15 +56,15 @@ module.exports = class UnifiEvents extends EventEmitter {
         strict: true
       }
     })
-    .then(() => {
-      if (this.socket) {
+      .then(() => {
+        if (this.socket) {
         // inject new cookie into the ws handler
-        this.socket.options.headers.Cookie = this.jar.getCookieString(this.controller.href)
-      }
-    })
-    .catch((e) => {
-      this.emit('websocket-status', `UniFi Events: Login Failed ${e.message}`)
-    })
+          this.socket.options.headers.Cookie = this.jar.getCookieString(this.controller.href)
+        }
+      })
+      .catch((e) => {
+        this.emit('websocket-status', `UniFi Events: Login Failed ${e.message}`)
+      })
   }
 
   _listen () {
@@ -126,9 +125,9 @@ module.exports = class UnifiEvents extends EventEmitter {
         return this.rp.get(`${this.controller.href}api/s/${this.opts.site}/stat/user/${mac}`, {
           json: true
         })
-        .then((data) => {
-          return data.data[0]
-        })
+          .then((data) => {
+            return data.data[0]
+          })
       })
   }
 
@@ -140,5 +139,4 @@ module.exports = class UnifiEvents extends EventEmitter {
         })
       })
   }
-
 }

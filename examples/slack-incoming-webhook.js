@@ -37,9 +37,13 @@ unifi.on('ready', () => {
 })
 
 unifi.on('connected', (data) => {
-  sendNotification(`Device *${data.hostname}* has Connected to *${data.ssid}* on channel ${data.channel}.`)
+  unifi.getAp(data.ap).then((ap) => {
+    sendNotification(`Device *${data.hostname}* has Connected to *${data.ssid}* (${ap.name}) on channel ${data.channel}.`)
+  })
 })
 
 unifi.on('disconnected', (data) => {
-  sendNotification(`Device *${data.hostname}* has Disconnected from *${data.ssid}*`)
+  unifi.getAp(data.ap).then((ap) => {
+    sendNotification(`Device *${data.hostname}* has Disconnected from *${data.ssid}* (${ap.name})`)
+  })
 })

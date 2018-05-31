@@ -131,6 +131,18 @@ module.exports = class UnifiEvents extends EventEmitter {
       })
   }
 
+  getAp (mac) {
+    return this._ensureLoggedIn()
+      .then(() => {
+        return this.rp.get(`${this.controller.href}api/s/${this.opts.site}/stat/device/${mac}`, {
+          json: true
+        })
+          .then((data) => {
+            return data.data[0]
+          })
+      })
+  }
+
   getSites () {
     return this._ensureLoggedIn()
       .then(() => {

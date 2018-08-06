@@ -4,7 +4,7 @@ UniFi Events is a Node.js module that allows you to listen for events generated 
 
 ## Requirements
 
-* Node.js v4 or later
+* Node.js v6 or later
 * [UniFi-Controller](https://www.ubnt.com/download/unifi) v5
 
 ## Installation

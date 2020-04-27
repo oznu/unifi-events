@@ -33,7 +33,8 @@ const unifi = new Unifi({
   username: 'admin',                    // Username (default: 'admin').
   password: 'ubnt',                     // Password (default: 'ubnt').
   site: 'default',                      // The UniFi site to connect to (default: 'default').
-  insecure: true                        // Allow connections if SSL certificate check fails (default: false).
+  insecure: true,                       // Allow connections if SSL certificate check fails (default: false).
+  unifios: false                        // For devices with UnifiOS turn this on
 });
 
 // Listen for any event

@@ -73,7 +73,11 @@ module.exports = class UnifiEvents extends EventEmitter {
 
     _listen() {
         const cookies = this.jar.getCookieString(this.controller.href);
-        this.ws = new WebSocket(`wss://${this.controller.host}/wss/s/${this.opts.site}/events`, {
+        let eventsUrl = `wss://${this.controller.host}/wss/s/${this.opts.site}/events`;
+        if (this.opts.unifios) {
+            eventsUrl = `wss://${this.controller.host}/proxy/network/wss/s/${this.opts.site}/events`;
+        } 
+        this.ws = new WebSocket(eventsUrl, {
             perMessageDeflate: false,
             rejectUnauthorized: !this.opts.insecure,
             headers: {

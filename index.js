@@ -154,7 +154,7 @@ module.exports = class UnifiEvents extends EventEmitter {
     }
 
     _url(path) {
-        if (this.unifios) {
+        if (this.opts.unifios) {
             // unifios using an proxy, set extra path
             if (path.indexOf('/') === 0) {
                 return `${this.controller.href}proxy/network/${path}`;

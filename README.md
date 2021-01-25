@@ -1,16 +1,14 @@
-# ubnt-unifi 
+# unifi-events 
 
-[![NPM version](https://badge.fury.io/js/ubnt-unifi.svg)](http://badge.fury.io/js/ubnt-unifi)
-[![Dependency Status](https://img.shields.io/gemnasium/hobbyquaker/ubnt-unifi.svg?maxAge=2592000)](https://gemnasium.com/github.com/hobbyquaker/ubnt-unifi)
-[![Build Status](https://travis-ci.org/hobbyquaker/ubnt-unifi.svg?branch=master)](https://travis-ci.org/hobbyquaker/ubnt-unifi)
-[![XO code style](https://img.shields.io/badge/code_style-XO-5ed9c7.svg)](https://github.com/sindresorhus/xo)
+[![NPM version](https://badge.fury.io/js/unifi-events.svg)](http://badge.fury.io/js/unifi-events)
+[![Dependency Status](https://img.shields.io/gemnasium/oznu/unifi-events.svg?maxAge=2592000)](https://gemnasium.com/github.com/oznu/unifi-events)
+[![Build Status](https://travis-ci.org/oznu/unifi-events.svg?branch=master)](https://travis-ci.org/oznu/unifi-events)
 [![License][mit-badge]][mit-url]
 
-> ubnt-unifi is a Node.js module that allows you to listen for events from and call methods on the UniFi API (UniFi is 
+> unifi-events is a Node.js module that allows you to listen for events from and call methods on the UniFi API (UniFi is 
 Ubiquiti Networks wifi controller software).
 
-This is a fork of [unifi-events](https://github.com/oznu/unifi-events), heavily modified to suite my needs.
-
+This is a merge-back from the fork [ubnt-unifi](https://github.com/hobbyquaker/ubnt-unifi) as it seems no longer maintained.
 
 ## Requirements
 
@@ -19,13 +17,12 @@ This is a fork of [unifi-events](https://github.com/oznu/unifi-events), heavily 
 
 ## Installation
 
-`$ npm install ubnt-unifi`
-
+`$ npm install unifi-events`
 
 ## Example
 
 ```javascript
-const Unifi = require('ubnt-unifi')
+const Unifi = require('unifi-events')
 
 const unifi = new Unifi({
   host: 'unifi',                        // The hostname or ip address of the unifi controller (default: 'unifi')
@@ -45,7 +42,7 @@ unifi.on('**', function (data) {
 
 ## Events
 
-ubnt-unifi uses [EventEmitter2](https://github.com/asyncly/EventEmitter2) and namespaced events. 
+unifi-events uses [EventEmitter2](https://github.com/asyncly/EventEmitter2) and namespaced events. 
 
 ### namespace `ctrl`
 

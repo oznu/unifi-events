@@ -147,7 +147,7 @@ module.exports = class UnifiEvents extends EventEmitter {
     }
 
     _ensureLoggedIn() {
-        return this.rp.get(`${this.controller.href}api/self`)
+        return this.rp.get(`${this.controller.href}api/${this.opts.unifios ? 'users/' : ''}self`)
             .catch(() => {
                 return this._login();
             });

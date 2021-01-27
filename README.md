@@ -185,8 +185,8 @@ unifi.put('rest/device/<device_id>', {led_override: 'on'}).then(console.log);
 
 ## License
 
-MIT © 2017-2021 [oznu](https://github.com/oznu)
-MIT © 2018 [Sebastian Raff](https://github.com/hobbyquaker)    
+* MIT © 2017-2021 [oznu](https://github.com/oznu)
+* MIT © 2018 [Sebastian Raff](https://github.com/hobbyquaker)    
 
 [mit-badge]: https://img.shields.io/badge/License-MIT-blue.svg?style=flat
 [mit-url]: LICENSE

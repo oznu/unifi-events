@@ -19,7 +19,7 @@ module.exports = class UnifiEvents extends EventEmitter {
         this.opts.unifios = this.opts.unifios || false;
 
 
-        this.userAgent = 'node.js unifi-events';
+        this.userAgent = 'node.js unifi-events UniFi Events';
         this.controller = url.parse('https://' + this.opts.host + ':' + this.opts.port);
 
         this.jar = rp.jar();

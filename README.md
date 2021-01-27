@@ -1,14 +1,10 @@
 # unifi-events 
 
-[![NPM version](https://badge.fury.io/js/unifi-events.svg)](http://badge.fury.io/js/unifi-events)
-[![Dependency Status](https://img.shields.io/gemnasium/oznu/unifi-events.svg?maxAge=2592000)](https://gemnasium.com/github.com/oznu/unifi-events)
-[![Build Status](https://travis-ci.org/oznu/unifi-events.svg?branch=master)](https://travis-ci.org/oznu/unifi-events)
+[![npm](https://img.shields.io/npm/v/unifi-events.svg)](https://www.npmjs.com/package/unifi-events)
+[![npm](https://img.shields.io/npm/dt/unifi-events.svg)](https://www.npmjs.com/package/unifi-events)
 [![License][mit-badge]][mit-url]
 
-> unifi-events is a Node.js module that allows you to listen for events from and call methods on the UniFi API (UniFi is 
-Ubiquiti Networks wifi controller software).
-
-This is a merge-back from the fork [ubnt-unifi](https://github.com/hobbyquaker/ubnt-unifi) as it seems no longer maintained.
+unifi-events is a Node.js module that allows you to listen for events from and call methods on the UniFi API (UniFi is Ubiquiti Networks wifi controller software).
 
 ## Requirements
 

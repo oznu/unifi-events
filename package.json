@@ -1,24 +1,31 @@
 {
   "name": "unifi-events",
   "description": "listen for events from and call methods on the UniFi API (Ubiquiti Wifi).",
-  "version": "2.0.0",
-  "main": "index.js",
-  "devDependencies": {
-    "camo-purge": "latest"
-  },
-  "engines": {
-    "node": ">=6.0.0"
-  },
-  "dependencies": {
-    "eventemitter2": "^5.0.1",
-    "request": "^2.83.0",
-    "request-promise": "^4.2.2",
-    "ws": "^4.0.0"
-  },
+  "version": "2.0.0-beta.1",
+  "license": "MIT",
+  "author": "oznu <dev@oz.nu>",
+  "contributors": [
+    "oznu <dev@oz.nu>",
+    "hobbyquaker <https://github.com/hobbyquaker>"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/oznu/unifi-events.git"
   },
+  "bugs": {
+    "url": "https://github.com/oznu/unifi-events/issues"
+  },
+  "homepage": "https://github.com/oznu/unifi-events#readme",
+  "main": "index.js",
+  "engines": {
+    "node": ">=6.0.0"
+  },
+  "funding": [
+    {
+      "type": "paypal",
+      "url": "https://paypal.me/oznu"
+    }
+  ],
   "keywords": [
     "unifi",
     "ubiquiti",
@@ -27,13 +34,13 @@
     "api",
     "events"
   ],
-  "author": "hobbyquaker https://github.com/hobbyquaker",
-  "contributors": [
-    "oznu <dev@oz.nu>"
-  ],
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/oznu/unifi-events/issues"
+  "dependencies": {
+    "eventemitter2": "^5.0.1",
+    "request": "^2.83.0",
+    "request-promise": "^4.2.2",
+    "ws": "^4.0.0"
   },
-  "homepage": "https://github.com/oznu/unifi-events#readme"
+  "devDependencies": {
+    "camo-purge": "latest"
+  }
 }

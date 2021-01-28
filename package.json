@@ -1,7 +1,7 @@
 {
   "name": "unifi-events",
   "description": "listen for events from and call methods on the UniFi API (Ubiquiti Wifi).",
-  "version": "2.0.0-beta.2",
+  "version": "2.0.0",
   "license": "MIT",
   "author": "oznu <dev@oz.nu>",
   "contributors": [

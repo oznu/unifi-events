@@ -1,199 +1,277 @@
-const url = require('url');
-const EventEmitter = require('eventemitter2').EventEmitter2;
-const WebSocket = require('ws');
-const rp = require('request-promise');
+"use strict"
 
-module.exports = class UnifiEvents extends EventEmitter {
+const url = require('url')
+const EventEmitter = require('eventemitter2').EventEmitter2
+const https = require('https')
+const WebSocket = require('ws')
+const axios = require('axios')
+const axiosCookieJarSupport = require('axios-cookiejar-support').default
+const tough = require('tough-cookie')
+axiosCookieJarSupport(axios)
+
+module.exports = class unifiEvents extends EventEmitter {
 
     constructor(opts) {
         super({
             wildcard: true
-        });
+        })
 
-        this.opts = opts || {};
-        this.opts.host = this.opts.host || 'unifi';
-        this.opts.port = this.opts.port || 8443;
-        this.opts.username = this.opts.username || 'admin';
-        this.opts.password = this.opts.password || 'ubnt';
-        this.opts.site = this.opts.site || 'default';
-        this.opts.unifios = this.opts.unifios || false;
+        this.opts = opts || {}
+        this.opts.host = this.opts.host || 'unifi'
+        this.opts.port = this.opts.port || 8443
+        this.opts.username = this.opts.username || 'admin'
+        this.opts.password = this.opts.password || 'ubnt'
+        this.opts.site = this.opts.site || 'default'
+        this.opts.insecure = this.opts.insecure || false
 
+        this.controller = url.parse(`https://${opts.host}:${opts.port}`)
 
-        this.userAgent = 'node.js unifi-events UniFi Events';
-        this.controller = url.parse('https://' + this.opts.host + ':' + this.opts.port);
+        this.cookieJar = new tough.CookieJar()
+        this.isClosed = true
+        this.autoReconnectInterval = 5 * 1000
 
-        this.jar = rp.jar();
+        this.isInit = false
+    }
 
-        this.rp = rp.defaults({
-            rejectUnauthorized: !this.opts.insecure,
-            jar: this.jar,
-            headers: {
-                'User-Agent': this.userAgent
-            },
-            json: true
-        });
-
-        this.autoReconnectInterval = 5 * 1000;
-
-        this.connect();
+    init() {
+        return new Promise((resolve, reject) => {
+            if (this.isInit) {
+                resolve(true)
+            } else {
+                this.instance = axios.create({
+                    jar: this.cookieJar,
+                    withCredentials: true,
+                    httpsAgent: new https.Agent({ rejectUnauthorized: false, requestCert: true, keepAlive: true })
+                })
+                this.instance.get(this.controller).then(response => {
+                    if (response.headers['x-csrf-token']) {
+                        this.xcsrftoken = response.headers['x-csrf-token']
+                        this.instance.defaults.headers.common['X-CSRF-Token'] = this.xcsrftoken
+                        this.unifios = true
+                    } else {
+                        this.unifios = false
+                    }
+                    // this.instance.interceptors.request.use(request => {
+                    //     console.dir({ 'Starting Request': request }, { depth: null })
+                    //     return request
+                    // })
+                    // this.instance.interceptors.response.use(response => {
+                    //     console.dir({ 'Response:': response }, { depth: null })
+                    //     return response
+                    // })
+                    this.isInit = true
+                    this.connect().then((response) => {
+                        resolve(true)
+                    }).catch(error => {
+                        reject(error)
+                    })
+                }).catch(error => {
+                    reject(error)
+                })
+            }
+        })
     }
 
     connect(reconnect) {
-        this.isClosed = false;
-        return this._login(reconnect)
-            .then(() => {
-                return this._listen();
-            });
+        return new Promise((resolve, reject) => {
+            this.isClosed = false
+            this._login(reconnect).then(() => {
+                this._listen()
+                resolve(true)
+            }).catch(error => {
+                reject(error)
+            })
+        })
     }
 
     close() {
-        this.isClosed = true;
-        this.ws.close();
+        this.isClosed = true
+        this.ws.site.close()
+        this.ws.super.close()
+        this.ws.system.close()
     }
 
     _login(reconnect) {
-        let endpointUrl = `${this.controller.href}api/login`;
-        if (this.opts.unifios) {
-            // unifios using one authorisation endpoint for protect and network.
-            endpointUrl = `${this.controller.href}api/auth/login`;
-        }
-
-        return this.rp.post(endpointUrl, {
-            resolveWithFullResponse: true,
-            body: {
+        return new Promise((resolve, reject) => {
+            let endpointUrl = `${this.controller.href}api/login`
+            if (this.unifios) {
+                endpointUrl = `${this.controller.href}api/auth/login`
+            }
+            this.instance.post(endpointUrl, {
                 username: this.opts.username,
-                password: this.opts.password
-            }
-        }).catch(() => {
-            if (!reconnect) {
-                this._reconnect();
-            }
-        });
+                password: this.opts.password,
+            }).then(() => {
+                resolve(true)
+            }).catch(error => {
+                if (!reconnect) {
+                    this._reconnect();
+                }
+            })
+        })
     }
 
     _listen() {
-        const cookies = this.jar.getCookieString(this.controller.href);
-        let eventsUrl = `wss://${this.controller.host}/wss/s/${this.opts.site}/events`;
-        if (this.opts.unifios) {
-            eventsUrl = `wss://${this.controller.host}/proxy/network/wss/s/${this.opts.site}/events`;
-        } 
-        this.ws = new WebSocket(eventsUrl, {
-            perMessageDeflate: false,
-            rejectUnauthorized: !this.opts.insecure,
-            headers: {
-                'User-Agent': this.userAgent,
-                Cookie: cookies
+        this.cookieJar.getCookieString(this.controller.href).then(cookies => {
+
+            let eventsUrl = `wss://${this.controller.host}/wss/s/${this.opts.site}/events`
+
+            if (this.unifios) {
+                eventsUrl = `wss://${this.controller.host}/proxy/network/wss/s/${this.opts.site}/events`
             }
-        });
 
-        const pingpong = setInterval(() => {
-            this.ws.send('ping');
-        }, 15000);
-
-        this.ws.on('open', () => {
-            this.isReconnecting = false;
-            this.emit('ctrl.connect');
-        });
-
-        this.ws.on('message', data => {
-            if (data === 'pong') {
-                return;
-            }
-            try {
-                const parsed = JSON.parse(data);
-                if ('data' in parsed && Array.isArray(parsed.data)) {
-                    parsed.data.forEach(entry => {
-                        this._event(entry);
-                    });
+            this.ws = new WebSocket(eventsUrl, {
+                perMessageDeflate: false,
+                rejectUnauthorized: !this.opts.insecure,
+                headers: {
+                    Cookie: cookies
                 }
-            } catch (err) {
-                this.emit('ctrl.error', err);
-            }
-        });
+            })
 
-        this.ws.on('close', () => {
-            this.emit('ctrl.close');
-            clearInterval(pingpong);
-            this._reconnect();
-        });
+            const pingpong = setInterval(() => {
+                this.ws.send('ping')
+            }, 15000)
 
-        this.ws.on('error', err => {
-            clearInterval(pingpong);
-            this.emit('ctrl.error', err);
-            this._reconnect();
-        });
+            this.ws.on('open', () => {
+                this.isReconnecting = false
+                this.emit('ctrl.connect')
+            })
+
+            this.ws.on('message', data => {
+                if (data === 'pong') {
+                    return
+                }
+                try {
+                    const parsed = JSON.parse(data)
+                    if ('data' in parsed && Array.isArray(parsed.data)) {
+                        parsed.data.forEach(entry => {
+                            this._event(entry)
+                        })
+                    }
+                } catch (err) {
+                    this.emit('ctrl.error', err)
+                }
+            })
+
+            this.ws.on('close', () => {
+                this.emit('ctrl.close')
+                clearInterval(pingpong)
+                this._reconnect()
+            })
+
+            this.ws.on('error', err => {
+                this.emit('ctrl.error', err)
+                clearInterval(pingpong)
+                this._reconnect()
+            })
+        })
     }
 
     _reconnect() {
         if (!this.isReconnecting && !this.isClosed) {
-            this.isReconnecting = true;
+            this.isReconnecting = true
             setTimeout(() => {
-                this.emit('ctrl.reconnect');
-                this.isReconnecting = false;
-                this.connect(true);
-            }, this.autoReconnectInterval);
+                this.emit('ctrl.reconnect')
+                this.isReconnecting = false
+                this.connect(true).catch(error => {
+                    console.dir('_reconnect() encountered an error')
+                })
+            }, this.autoReconnectInterval)
         }
     }
 
     _event(data) {
         if (data && data.key) {
             // TODO clarifiy what to do with events without key...
-            const match = data.key.match(/EVT_([A-Z]{2})_(.*)/);
+            const match = data.key.match(/EVT_([A-Z]{2})_(.*)/)
             if (match) {
-                const [, group, event] = match;
-                this.emit([group.toLowerCase(), event.toLowerCase()].join('.'), data);
+                const [, group, event] = match
+                this.emit([group.toLowerCase(), event.toLowerCase()].join('.'), data)
             }
         }
     }
 
     _ensureLoggedIn() {
-        return this.rp.get(`${this.controller.href}api/${this.opts.unifios ? 'users/' : ''}self`)
-            .catch(() => {
-                return this._login();
-            });
+        return new Promise((resolve, reject) => {
+            this.instance.get(`${this.controller.href}api/${this.unifios ? 'users/' : ''}self`).then(() => {
+                resolve(true)
+            }).catch(() => {
+                this._login().then(() => {
+                    resolve(true)
+                }).catch(error => {
+                    reject(error)
+                })
+            })
+        })
     }
 
     _url(path) {
-        if (this.opts.unifios) {
-            // unifios using an proxy, set extra path
+        if (this.unifios) {
             if (path.indexOf('/') === 0) {
-                return `${this.controller.href}proxy/network/${path}`;
+                return `${this.controller.href}proxy/network/${path}`
             }
-            return `${this.controller.href}proxy/network/api/s/${this.opts.site}/${path}`;
+            return `${this.controller.href}proxy/network/api/s/${this.opts.site}/${path}`
         }
         else {
             if (path.indexOf('/') === 0) {
-                return `${this.controller.href}${path}`;
+                return `${this.controller.href}${path}`
             }
-            return `${this.controller.href}api/s/${this.opts.site}/${path}`;
+            return `${this.controller.href}api/s/${this.opts.site}/${path}`
         }
     }
 
     get(path) {
-        return this._ensureLoggedIn()
-            .then(() => {
-                return this.rp.get(this._url(path));
-            });
+        return new Promise((resolve, reject) => {
+            this._ensureLoggedIn().then(() => {
+                this.instance.get(this._url(path)).then(response => {
+                    resolve(response.data)
+                }).catch(error => {
+                    reject(error)
+                })
+            }).catch(error => {
+                reject(error)
+            })
+        })
     }
 
     del(path) {
-        return this._ensureLoggedIn()
-            .then(() => {
-                return this.rp.del(this._url(path));
-            });
+        return new Promise((resolve, reject) => {
+            this._ensureLoggedIn().then(() => {
+                this.instance.del(this._url(path)).then(response => {
+                    resolve(response.data)
+                }).catch(error => {
+                    reject(error)
+                })
+            }).catch(error => {
+                reject(error)
+            })
+        })
     }
 
     post(path, body) {
-        return this._ensureLoggedIn()
-            .then(() => {
-                return this.rp.post(this._url(path), {body});
-            });
+        return new Promise((resolve, reject) => {
+            this._ensureLoggedIn().then(() => {
+                this.instance.post(this._url(path), body).then(response => {
+                    resolve(response.data)
+                }).catch(error => {
+                    reject(error)
+                })
+            }).catch(error => {
+                reject(error)
+            })
+        })
     }
 
     put(path, body) {
-        return this._ensureLoggedIn()
-            .then(() => {
-                return this.rp.put(this._url(path), {body});
-            });
+        return new Promise((resolve, reject) => {
+            this._ensureLoggedIn().then(() => {
+                this.instance.put(this._url(path), body).then(response => {
+                    resolve(response.data)
+                }).catch(error => {
+                    reject(error)
+                })
+            }).catch(error => {
+                reject(error)
+            })
+        })
     }
-};
+}

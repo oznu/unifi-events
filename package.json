@@ -1,31 +1,24 @@
 {
-  "name": "unifi-events",
+  "name": "unifi-axios-events",
   "description": "listen for events from and call methods on the UniFi API (Ubiquiti Wifi).",
-  "version": "2.0.0",
+  "version": "0.1.0",
   "license": "MIT",
-  "author": "oznu <dev@oz.nu>",
+  "author": "woogie <https://github.com/worldwidewoogie>",
   "contributors": [
-    "oznu <dev@oz.nu>",
-    "hobbyquaker <https://github.com/hobbyquaker>"
+    "woogie <https://github.com/worldwidewoogie>"
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/oznu/unifi-events.git"
+    "url": "https://github.com/worldwidewoogie/unifi-axios-events.git"
   },
   "bugs": {
-    "url": "https://github.com/oznu/unifi-events/issues"
+    "url": "https://github.com/worldwidewoogie/unifi-axios-events/issues"
   },
-  "homepage": "https://github.com/oznu/unifi-events#readme",
+  "homepage": "https://github.com/worldwidewoogie/unifi-axios-events#readme",
   "main": "index.js",
   "engines": {
     "node": ">=6.0.0"
   },
-  "funding": [
-    {
-      "type": "paypal",
-      "url": "https://paypal.me/oznu"
-    }
-  ],
   "keywords": [
     "unifi",
     "ubiquiti",
@@ -35,12 +28,12 @@
     "events"
   ],
   "dependencies": {
-    "eventemitter2": "^5.0.1",
-    "request": "^2.83.0",
-    "request-promise": "^4.2.2",
-    "ws": "^4.0.0"
-  },
-  "devDependencies": {
-    "camo-purge": "latest"
+    "axios": "^0.21.1",
+    "axios-cookiejar-support": "^1.0.1",
+    "eventemitter2": "^6.4.4",
+    "https": "^1.0.0",
+    "tough-cookie": "^4.0.0",
+    "url": "^0.11.0",
+    "ws": "^7.4.3"
   }
 }
